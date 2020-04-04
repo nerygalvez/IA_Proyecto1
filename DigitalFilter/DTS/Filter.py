@@ -1,6 +1,6 @@
 import scipy.signal as sig
-from DTS.Signal import Signal
-
+#from DTS.Signal import Signal
+from DigitalFilter.DTS.Signal import Signal
 class Filter:
 
     values = []

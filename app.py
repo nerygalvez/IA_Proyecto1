@@ -4,6 +4,7 @@
 from flask import Flask,render_template,request,jsonify,redirect, abort, send_from_directory, url_for
 import csv
 
+from algoritmo import Algoritmo 
 
 app = Flask(__name__)
 
@@ -27,8 +28,18 @@ def generarFiltro():
     print('frecuencia', frecuencia)
     print('tipoFiltro', tipoFiltro)
 
-    #Devuelvo un arreglo con los coeficientes del filtro
-    coeficientes = [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0]
+    #Inicializo un algoritmo
+    algoritmo = Algoritmo(int(frecuencia), tipoFiltro)
+    
+    #genero las señales con las que se calcula el valor fitness
+    algoritmo.generarSenales()
+    print('T1')
+
+    #Obtengo el arreglo de coeficientes del filtro
+    coeficientes = algoritmo.ejecutar()
+
+
+    #Devuelvo el arreglo con los coeficientes del filtro
     return jsonify(
                     coeficientes=coeficientes,
                    )

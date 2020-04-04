@@ -8,7 +8,6 @@ class Signal:
 
     def __init__(self):
         self.t = np.linspace(0, 1, SAMPLE_FRECUENCY, False)
-        #print(self.t)
 
     def generate(self, frecuency, amplitude, sinoidal):
         if sinoidal:
