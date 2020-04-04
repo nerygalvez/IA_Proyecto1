@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        input[type=text],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        label {
+            font-size: 20px;
+            padding: 12px 12px 12px 0;
+            display: inline-block;
+        }
+
+        input[type=button],
+        input[type=submit] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+
+        input[type=button]:hover,
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        .col-25 {
+            float: left;
+            width: 25%;
+            margin-top: 6px;
+        }
+
+        .col-75 {
+            float: left;
+            width: 75%;
+            margin-top: 6px;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Responsive layout - when the screen is less than 600px wide, make the two columns stack on top of each other instead of next to each other */
+        @media screen and (max-width: 600px) {
+
+            .col-25,
+            .col-75,
+            input[type=button],
+            input[type=submit] {
+                width: 100%;
+                margin-top: 0;
+            }
+        }
+    </style>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2
+        }
+    </style>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script>
+        $(function () {
+            $("#filtrarForm").on("submit", function (e) {
+                e.preventDefault();
+                var f = $(this);
+                var formData = new FormData(document.getElementById("filtrarForm"));
+
+                arreglo_coeficientes = [
+                    $('#b0').text()
+                    , $('#b1').text()
+                    , $('#b2').text()
+                    , $('#b3').text()
+                    , $('#b4').text()
+                    , $('#b5').text()
+                    , $('#b6').text()
+                    , $('#b7').text()
+                    , $('#b8').text()
+                    , $('#b9').text()
+                    , $('#b10').text()
+                    , $('#b11').text()
+                    , $('#b12').text()
+                    , $('#b13').text()
+                    , $('#b14').text()
+                    , $('#b15').text()
+                    , $('#b16').text()
+                    , $('#b17').text()
+                ]
+                formData.append("arreglo_coeficientes", arreglo_coeficientes);
+                //formData.append(f.attr("name"), $(this)[0].files[0]);
+
+                //console.log(formData)
+
+                $.ajax({
+                    url: "/filtrar",
+                    type: "post",
+                    dataType: "html",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                })
+                    .done(function (res) {
+                        //$("#mensaje").html("Respuesta: " + res);
+                        alert('Filtrado terminado correctamente!');
+                    });
+            });
+        });
+    </script>
+
+
+
+    <title>IA1 Proyecto 1</title>
+</head>
+
+<body>
+
+    <h1>Generador de Filtros</h1>
+
+    <div class="container">
+
+        <h1>Ingrese los datos del filtro</h1>
+
+        <div class="row">
+            <label for="lname">Frecuencia de corte:</label>
+            <input type="number" name="frecuencia" id="frecuencia" value="5">
+        </div>
+
+        <div class="row">
+            <label for="fname">Seleccione el tipo de filtro:</label>
+            <select id="tipoFiltro" name="tipoFiltro">
+                <option value="pb">Pasa bajos</option>
+                <option value="pa">Pasa altos</option>
+            </select><br><br>
+        </div>
+
+
+        <div class="row">
+            <input id="btnGenerarFiltro" type="button" value="Generar filtro" onclick="generarFiltro()">
+        </div>
+
+
+    </div>
+
+
+
+    <div style="overflow-x:auto;">
+        <table id="tablaCoeficientes">
+            <tr>
+                <th colspan="6" style="font-size: 25px;">Coeficientes del filtro</th>
+            </tr>
+            <tr>
+                <td id="b0">1</td>
+                <td id="b1">1</td>
+                <td id="b2">1</td>
+                <td id="b3">1</td>
+                <td id="b4">1</td>
+                <td id="b5">1</td>
+            </tr>
+            <tr>
+                <td id="b6">1</td>
+                <td id="b7">1</td>
+                <td id="b8">1</td>
+                <td id="b9">1</td>
+                <td id="b10">1</td>
+                <td id="b11">1</td>
+            </tr>
+            <tr>
+                <td id="b12">1</td>
+                <td id="b13">1</td>
+                <td id="b14">1</td>
+                <td id="b15">1</td>
+                <td id="b16">1</td>
+                <td id="b17">1</td>
+            </tr>
+        </table>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <div class="container">
+
+        <form enctype="multipart/form-data" id="filtrarForm" name="filtrarForm" method="post">
+
+            <div class="row">
+                <label for="fname">Seleccione un archivo de Excel:</label>
+                <input type="file" id="archivo1" name="archivo1"><br><br>
+            </div>
+
+            <div class="row">
+                <input type="submit" value="Filtrar">
+            </div>
+
+        </form>
+
+
+    </div>
+
+
+
+
+
+    <script>
+
+        function generarFiltro() {
+            //obtener los datos de las cajas de texto
+            var parametro1 = $('#frecuencia').val();
+            var parametro2 = $('#tipoFiltro').val();
+            //console.log(parametro1);
+            //console.log(parametro2);
+
+            //llamada ajax          
+            /*Para conformar data es {nomVariable1: contenidoVariable1, nomVariable2: contenidoVariable2}*/
+
+            $.ajax({
+
+                data: { frecuencia: parametro1, tipoFiltro: parametro2 },
+                url: "/generarFiltro", //url de donde obtener los datos
+                dataType: 'json', //tipo de datos retornados
+                type: 'post' //enviar variables como post
+
+            }).done(function (json) {
+                //console.log(json);
+
+                //Voy a reemplazar el html de la tabla
+                var cadena = "<tr>" +
+                    "<th colspan=\"6\" style=\"font-size: 25px;\">Coeficientes del filtro</th>" +
+                    "</tr>";
+
+                //Obtengo el arreglo de coeficientes devuelto en la petición
+                var arreglo_coeficientes = json['coeficientes'];
+
+                cadena +=
+                    "<tr>"
+                    + "<td id=\"b0\">" + arreglo_coeficientes[0] + "</td>"
+                    + "<td id=\"b1\">" + arreglo_coeficientes[1] + "</td>"
+                    + "<td id=\"b2\">" + arreglo_coeficientes[2] + "</td>"
+                    + "<td id=\"b3\">" + arreglo_coeficientes[3] + "</td>"
+                    + "<td id=\"b4\">" + arreglo_coeficientes[4] + "</td>"
+                    + "<td id=\"b5\">" + arreglo_coeficientes[5] + "</td>"
+                    + "</tr >"
+
+                    + "<tr>"
+                    + "<td id=\"b6\">" + arreglo_coeficientes[6] + "</td>"
+                    + "<td id=\"b7\">" + arreglo_coeficientes[7] + "</td>"
+                    + "<td id=\"b8\">" + arreglo_coeficientes[8] + "</td>"
+                    + "<td id=\"b9\">" + arreglo_coeficientes[9] + "</td>"
+                    + "<td id=\"b10\">" + arreglo_coeficientes[10] + "</td>"
+                    + "<td id=\"b11\">" + arreglo_coeficientes[11] + "</td>"
+                    + "</tr >"
+
+                    + "< tr >"
+                    + "<td id=\"b12\">" + arreglo_coeficientes[12] + "</td>"
+                    + "<td id=\"b13\">" + arreglo_coeficientes[13] + "</td>"
+                    + "<td id=\"b14\">" + arreglo_coeficientes[14] + "</td>"
+                    + "<td id=\"b15\">" + arreglo_coeficientes[15] + "</td>"
+                    + "<td id=\"b16\">" + arreglo_coeficientes[16] + "</td>"
+                    + "<td id=\"b17\">" + arreglo_coeficientes[17] + "</td>"
+                    + "</tr >"
+                    ;
+
+                $("#tablaCoeficientes").html(cadena);
+
+                alert('Filtro generado correctamente!');
+            });
+        }
+
+
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
