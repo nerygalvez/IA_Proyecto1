@@ -107,7 +107,7 @@
                 var f = $(this);
                 var formData = new FormData(document.getElementById("filtrarForm"));
 
-                arreglo_coeficientes = [
+                /*arreglo_coeficientes = [
                     $('#b0').text()
                     , $('#b1').text()
                     , $('#b2').text()
@@ -128,9 +128,45 @@
                     , $('#b17').text()
                 ]
                 formData.append("arreglo_coeficientes", arreglo_coeficientes);
-                //formData.append(f.attr("name"), $(this)[0].files[0]);
+                */
 
-                //console.log(formData)
+                b0 = $('#b0').text();
+                b1 = $('#b1').text();
+                b2 = $('#b2').text();
+                b3 = $('#b3').text();
+                b4 = $('#b4').text();
+                b5 = $('#b5').text();
+                b6 = $('#b6').text();
+                b7 = $('#b7').text();
+                b8 = $('#b8').text();
+                b9 = $('#b9').text();
+                b10 = $('#b10').text();
+                b11 = $('#b11').text();
+                b12 = $('#b12').text();
+                b13 = $('#b13').text();
+                b14 = $('#b14').text();
+                b15 = $('#b15').text();
+                b16 = $('#b16').text();
+                b17 = $('#b17').text();
+
+                formData.append("b0", b0);
+                formData.append("b1", b1);
+                formData.append("b2", b2);
+                formData.append("b3", b3);
+                formData.append("b4", b4);
+                formData.append("b5", b5);
+                formData.append("b6", b6);
+                formData.append("b7", b7);
+                formData.append("b8", b8);
+                formData.append("b9", b9);
+                formData.append("b10", b10);
+                formData.append("b11", b11);
+                formData.append("b12", b12);
+                formData.append("b13", b13);
+                formData.append("b14", b14);
+                formData.append("b15", b15);
+                formData.append("b16", b16);
+                formData.append("b17", b17);
 
                 $.ajax({
                     url: "/filtrar",
@@ -164,7 +200,7 @@
 
         <div class="row">
             <label for="lname">Frecuencia de corte:</label>
-            <input type="number" name="frecuencia" id="frecuencia" value="5">
+            <input type="number" name="frecuencia" id="frecuencia" value="300">
         </div>
 
         <div class="row">

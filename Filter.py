@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import scipy.signal as sig
-#from DTS.Signal import Signal
-from DigitalFilter.DTS.Signal import Signal
+
+from Signal import Signal
 class Filter:
 
     values = []
@@ -12,4 +15,8 @@ class Filter:
     def filter(self, input):
         output = Signal()
         output.y = sig.sosfilt(self.values, input.y)
+
+        #print('***** Salida del filtro *****')
+        #print(output.y)
+
         return output

@@ -4,15 +4,61 @@
 import random
 import numpy as np
 from nodo import Nodo
-from DigitalFilter.DTS.Signal import Signal
-from DigitalFilter.DTS.Filter import Filter
+from Signal import Signal
+from Filter import Filter
 
+#CONSTANTES DEL ALGORITMO
 maximo_generaciones = 2000 #Número máximo de generaciones que va a tener el algoritmo
 tamano_poblacion = 20
 tamano_padres_seleccionados = 10 #Número de padres a seleccionar entre los mejores padres
 tamano_individuos = 18 #Porque son 18 coeficientes de un filtro
-fitness_esperado = 10 #Si el 70% de la población tiene un valor fitness mayor a 'fitness_esperado' detengo el algoritmo
+fitness_esperado = 6.3551731312595228e+303 #Si el 70% de la población tiene un valor fitness mayor a 'fitness_esperado' detengo el algoritmo
 amplitud = 10 #Amplitud con la que se va a generar las señales
+
+
+
+#CONSTANTES PARA EL CÁLCULO DE LA POTENCIA MEDIA
+MAX_FLOAT = float(1000000000.0)
+MIN_FLOAT = float(-1000000000.0)
+pos_inf = float('inf')     # positive infinity
+neg_inf = float('-inf')    # negative infinity
+
+
+
+
+
+#FUNCIONES PARA EL CÁLCULO DE LA POTENCIA MEDIA
+def verificarNumero(valor):
+    return (MAX_FLOAT if valor == pos_inf else MIN_FLOAT if valor == neg_inf else 0 if str(valor) == 'nan' else valor)
+
+def cuadrado(valor):
+    #np.seterr(over='raise')
+    np.seterr(all = 'raise')
+    try:
+        #Trato de reemplazar los inf, -inf y nan de una vez aquí
+        valor = verificarNumero(valor)
+        
+        valor = valor **2 #Elevo al cuadrado
+        #Vuelvo a verificar si el número no dio inf, -inf o nan
+        return verificarNumero(valor)
+    except :
+        #Aquí debería de llegar al sacar el cuadrado de un número muy grande
+        #Retorno el máximo positivo porque cualquier número al cuadrado es positivo
+        return MAX_FLOAT #Si dio exception de overflow retorno el valor máximo
+
+def sumatoria(arreglo):
+    try:
+        np.seterr(all = 'raise')
+        suma = sum(arreglo)
+        return verificarNumero(suma)
+    except:
+        #Aquí voy a retornar el valor máximo positivo, pero creo que a veces podría ser negativo
+        #aunque no sé cómo ver si es negativa o positiva la suma
+        return MAX_FLOAT #Si dio exception de overflow retorno el valor máximo
+
+
+
+
 
 
 class Algoritmo:
@@ -29,13 +75,9 @@ class Algoritmo:
 
         #Inicializo una señal S1
         self.S1 = Signal()
-        #Genero la señal S1
-        #self.S1.generate(self.fc - 200, amplitud, sinoidal=True)
 
         #Inicializo una señal S2
         self.S2 = Signal()
-        #Genero la señal S2
-        #self.S2.generate(self.fc + 200, amplitud, sinoidal=True)
         
     """
     *   Función que va a generar las señales con las que se va a calcular el valor fitness
@@ -84,6 +126,10 @@ class Algoritmo:
             
             return True
         
+        #Voy a ver a qué valores llega para ver el mejor fitness
+        #return None
+
+
         # Veo si el 70% de la población tiene un valor fitness mayor a 'fitness_esperado'
         # Busco a los mayores porque mientras más alto es el valor fitness mejor es la solución
         contador = 0
@@ -101,10 +147,7 @@ class Algoritmo:
     *   @solucion = arreglo con los coeficientes del filtro del cual se quiere obtener el valor fitness
     """
     def evaluarFitness(self, solucion):
-
-        #solucion = [0.5999402, -0.5999402, 0, 1, -0.7265425, 0, 1, -2, 1, 1, -1.52169043, 0.6, 1, -2, 1, 1, -1.73631017, 0.82566455]
-        #amplitud = 4 #Amplitud con la que voy a generar las señales
-
+        
         #Desde el inicio generé la señal S1
         #Filtro la señal S1 con los coeficientes de la solución que quiero evaluar
         #Inicializo el filtro 1
@@ -120,21 +163,21 @@ class Algoritmo:
         T2 = filtro2.filter(self.S2)
 
         #Calcular la potencia media de T1
-        print('T1.y: ', T1.y)
-        absoluto1 = np.absolute(T1.y)
-        print('absoluto1: ', absoluto1)
-        sumatoria1 = sum([n**2 for n in  absoluto1])
-        print('sumatoria1:', sumatoria1)
+        arreglo_absolutos1 = np.absolute(T1.y)
+        arreglo_cuadrados1 = list(map(lambda elemento: cuadrado(elemento), arreglo_absolutos1))
+        sumatoria1 = sumatoria(arreglo_cuadrados1)
         P1 = (float(1) / float(2 * len(T1.y) - 1)) * float(sumatoria1)
+        #print('sumatoria1:', sumatoria1)
+        #print('P1: ', P1)
         
 
         #Calcular la potencia media de T2
-        print('T2.y: ', T2.y)
-        absoluto2 = np.absolute(T2.y)
-        print('absoluto2: ', absoluto2)
-        sumatoria2 = sum([n**2 for n in  absoluto2])
-        print('sumatoria2:', sumatoria2)
+        arreglo_absolutos2 = np.absolute(T2.y)
+        arreglo_cuadrados2 = list(map(lambda elemento: cuadrado(elemento), arreglo_absolutos2))
+        sumatoria2 = sumatoria(arreglo_cuadrados2)
         P2 = (float(1) / float(2 * len(T2.y) - 1)) * float(sumatoria2)
+        #print('sumatoria2:', sumatoria2)
+        #print('P2: ', P2)
 
         if self.tfiltro == "pb": #Si el filtro es pasa bajos
             fitness = P1 - P2
@@ -212,13 +255,22 @@ class Algoritmo:
 
 
 
+    """
+    *   Método para imprimir los datos de una población
+    """
+    def imprimirPoblacion(self, poblacion):
+        for individuo in poblacion:
+            print('Fitness: ', individuo.fitness)
+
+
+
 
     """
     *   Método que ejecutará el algoritmo genético para obtener
     *   los coeficientes del filtro
     """
     def ejecutar(self):
-        np.seterr(over='raise')
+        #np.seterr(over='raise')
         print("Algoritmo corriendo")
 
         generacion = 0
@@ -231,10 +283,13 @@ class Algoritmo:
             fin = self.verificarCriterio(poblacion, generacion)
             #generacion += 1
 
+        print('Cantidad de generaciones:', generacion)
+        self.imprimirPoblacion(poblacion)
+
         #Obtengo la mejor solución, este va a ser el arreglo de coeficientes para el filtro
         coeficientes = sorted(poblacion, key=lambda item: item.fitness, reverse=True)[:1] #Los ordena de mayor a menor
 
 
         #Devuelvo el arreglo de coeficientes del filtro
         #coeficientes = [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0]
-        return coeficientes
+        return coeficientes[0].solucion
